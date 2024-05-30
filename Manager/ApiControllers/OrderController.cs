@@ -76,11 +76,22 @@ namespace Manager.ApiControllers
             // Записываем список всех товаров в ViewBag, чтобы использовать его во вьювере
             ViewBag.Items = allItems;
 
-            return View(order);
+            // Создаем экземпляр модели UpdateOrder и инициализируем его значениями из заказа
+            var updateOrderModel = new UpdateOrder
+            {
+                Id = order.Id,
+                OrderDate = order.OrderDate,
+                CustomerName = order.CustomerName,
+                CustomerEmail = order.CustomerEmail,
+                ItemIds = order.Items.Select(i => i.Id).ToList() // Получаем Id всех товаров в заказе
+            };
+
+            // Передаем модель в представление
+            return View(updateOrderModel);
         }
 
         [HttpPost("Update/{id}")]
-        public async Task<IActionResult> Update(int id, [FromForm] Order request)
+        public async Task<IActionResult> Update(int id, [FromForm] UpdateOrder request)
         {
             if (id != request.Id)
             {
@@ -93,11 +104,14 @@ namespace Manager.ApiControllers
                 return NotFound();
             }
 
+            // Получаем товары по их Id
+            var items = await _dbContext.Products.Where(p => request.ItemIds.Contains(p.Id)).ToListAsync();
+
             // Обновляем поля заказа
             order.OrderDate = request.OrderDate;
             order.CustomerName = request.CustomerName;
             order.CustomerEmail = request.CustomerEmail;
-            order.Items = request.Items;
+            order.Items = items;
 
             // Сохраняем изменения в базе данных
             try

@@ -1,9 +1,9 @@
-﻿@model Manager.DAL.Models.Order
+﻿@model Manager.Models.Requests.UpdateOrder
 
 <h1>Update Order</h1>
 
 <form asp-action="Update" method="post">
-    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="Id" /> <!-- Скрытое поле для передачи Id заказа -->
 
     <div class="form-group">
         <label asp-for="OrderDate">Order Date:</label>
@@ -21,9 +21,9 @@
         <span asp-validation-for="CustomerEmail" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="Items">Items:</label>
-        <select asp-for="Items" asp-items="@(new SelectList(ViewBag.Items, "Id", "Name"))" multiple class="form-control"></select>
-        <span asp-validation-for="Items" class="text-danger"></span>
+        <label asp-for="ItemIds">Items:</label>
+        <select asp-for="ItemIds" asp-items="@(new SelectList(ViewBag.Items, "Id", "Name"))" multiple class="form-control"></select>
+        <span asp-validation-for="ItemIds" class="text-danger"></span>
     </div>
 
     <button type="submit" class="btn btn-primary">Update</button>
