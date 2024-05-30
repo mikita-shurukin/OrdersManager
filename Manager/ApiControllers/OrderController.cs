@@ -70,23 +70,19 @@ namespace Manager.ApiControllers
                 return NotFound();
             }
 
-            // Получаем список всех товаров из базы данных
             var allItems = await _dbContext.Products.ToListAsync();
 
-            // Записываем список всех товаров в ViewBag, чтобы использовать его во вьювере
             ViewBag.Items = allItems;
 
-            // Создаем экземпляр модели UpdateOrder и инициализируем его значениями из заказа
             var updateOrderModel = new UpdateOrder
             {
                 Id = order.Id,
                 OrderDate = order.OrderDate,
                 CustomerName = order.CustomerName,
                 CustomerEmail = order.CustomerEmail,
-                ItemIds = order.Items.Select(i => i.Id).ToList() // Получаем Id всех товаров в заказе
+                ItemIds = order.Items.Select(i => i.Id).ToList()
             };
 
-            // Передаем модель в представление
             return View(updateOrderModel);
         }
 
@@ -104,20 +100,20 @@ namespace Manager.ApiControllers
                 return NotFound();
             }
 
-            // Получаем товары по их Id
             var items = await _dbContext.Products.Where(p => request.ItemIds.Contains(p.Id)).ToListAsync();
 
-            // Обновляем поля заказа
             order.OrderDate = request.OrderDate;
             order.CustomerName = request.CustomerName;
             order.CustomerEmail = request.CustomerEmail;
-            order.Items = items;
 
-            // Сохраняем изменения в базе данных
+            order.Items.Clear();
+
+            order.Items.AddRange(items);
+
             try
             {
                 await _dbContext.SaveChangesAsync();
-                return RedirectToAction("Get"); // Перенаправляем на страницу просмотра заказов после успешного обновления
+                return RedirectToAction("Get");
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -132,17 +128,23 @@ namespace Manager.ApiControllers
             }
         }
 
+
+
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var orderToDelete = await _dbContext.Orders.FindAsync(id);
-            if (orderToDelete == null)
+            var itemToDelete = await _dbContext.Orders.FindAsync(id);
+
+            if (itemToDelete == null)
             {
                 return NotFound();
             }
 
-            _dbContext.Orders.Remove(orderToDelete);
+            _dbContext.Orders.Remove(itemToDelete);
+
             await _dbContext.SaveChangesAsync();
+
             return NoContent();
         }
 

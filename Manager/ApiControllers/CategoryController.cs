@@ -22,18 +22,6 @@ namespace Manager.ApiControllers
             _mapper = mapper;
         }
 
-        //[HttpGet("{id}")]
-        //public async Task<IActionResult> Get(int id)
-        //{
-        //    var result = await _dbContext.Categories.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
-        //    if (result is null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return Ok(result);
-        //}
-
         [HttpGet]
         public async Task<IActionResult> Get()
         {
